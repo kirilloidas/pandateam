@@ -1,5 +1,9 @@
-import { getCities } from "./weather"
+import { getCities } from "./city"
+import { getHourlyForecast, getCurrentForecast, getCurrentForecastForGroup } from './weather'
 
 export {
-  getCities
+  getCities,
+  getHourlyForecast,
+  getCurrentForecast,
+  getCurrentForecastForGroup,
 }
