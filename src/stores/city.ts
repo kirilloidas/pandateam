@@ -11,7 +11,7 @@ export const useCitiesStore = defineStore('city', () => {
   const cities: Ref<ICityWeather[]> = ref([])
   const currentCity: Ref<ICityWeather | null> = ref(null)
 
-  // const hourlyForecast = ref()
+  const hourlyForecast = ref()
 
   const addCity = (city: ICity) => {
     currentForecast(city.id)
@@ -22,15 +22,18 @@ export const useCitiesStore = defineStore('city', () => {
     cities.value = cities.value.filter(el => el.id !== id)
   }
 
+  const getHourlyForecastForCurrentCity = (cityId: number) => {
+    getHourlyForecast(cityId)
+      .then(res => {
+        console.log(res)
+        hourlyForecast.value = res.data
+      })
+  }
 
-
-  // const getHourlyForecastForCurrentCity = (cityId: number) => {
-  //   getHourlyForecast(cityId)
-  //     .then(res => {
-  //       console.log(res)
-  //       hourlyForecast.value = res.data
-  //     })
-  // }
+  const setCurrentCity = (city: ICityWeather) => {
+    currentCity.value = city
+    getHourlyForecastForCurrentCity(city.id)
+  }
 
   const currentForecast = (cityId: number) => {
     getCurrentForecast(cityId)
@@ -40,16 +43,12 @@ export const useCitiesStore = defineStore('city', () => {
       })
   }
 
-  const setCurrentCity = (city: ICityWeather) => {
-    currentCity.value = city
-    // getHourlyForecastForCurrentCity(city.id)
-  }
-
   return {
     cities,
     currentCity,
     addCity,
     removeCity,
     setCurrentCity,
+    hourlyForecast,
   }
 })

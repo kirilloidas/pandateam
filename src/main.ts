@@ -5,7 +5,7 @@ import App from './App.vue'
 import router from './router'
 
 import './assets/main.css'
-import { getCurrentForecast, getCurrentForecastForGroup } from './api/services/weather'
+import { getHourlyForecast } from './api/services/weather'
 
 const app = createApp(App)
 
@@ -13,6 +13,8 @@ app.use(createPinia())
 
 app.use(router)
 
-getCurrentForecast(524901)
+// getHourlyForecast(2643743)
+
+getHourlyForecast(2643743)
 
 app.mount('#app')

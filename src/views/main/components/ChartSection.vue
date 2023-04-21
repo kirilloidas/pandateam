@@ -5,15 +5,35 @@
 </template>
 
 <script setup lang="ts">
+import { getHourlyForecast } from '@/api/services';
+import { useCitiesStore } from '@/stores/city';
 import ApexCharts from 'apexcharts'
-import { onMounted, ref } from 'vue';
+import type { AxiosResponse } from 'axios';
+import { onMounted, ref, watch } from 'vue';
 
-const chartRef = ref(null)
+interface IHourlyData {
+  dt: number;
+  dt_txt: string;
+  main: {
+    temp: number;
+  };
+  [key: string]: unknown;
+}
+
+interface IDataResponse {
+  list: IHourlyData[];
+  [key: string]: unknown;
+}
+
+const citiesStore = useCitiesStore()
+
+const chartRef = ref()
+const chart = ref()
 
 const options = {
     series: [{
-    name: 'series1',
-    data: [31, 40, 28, 51, 42, 109, 100]
+    name: 'temperature',
+    data: []
   }],
     chart: {
     height: 350,
@@ -25,20 +45,70 @@ const options = {
   stroke: {
     curve: 'smooth'
   },
-  xaxis: {
-    type: 'datetime',
-    categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-  },
   tooltip: {
     x: {
-      format: 'dd/MM/yy HH:mm'
+      format: 'HH:mm:ss'
     },
   },
 };
 
+const updateChart = (newData: {x: string; y: number}[]) => {
+  chart.value.updateSeries([
+    {
+      data: newData,
+    },
+  ]);
+}
 
-onMounted(() => {
-  const chart = new ApexCharts(chartRef.value, options);
-  chart.render();
-})
+const getCurrentDayInterval = () => {
+  const currentDate = new Date();
+
+  const startOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
+
+  const endOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59);
+
+  return {
+    startOfDayTimestamp: startOfDay.getTime() / 1000,
+    endOfDayTimestamp: endOfDay.getTime() / 1000
+  }
+}
+
+const getCurrentData = (list: IHourlyData[]) => {
+  const { 
+    startOfDayTimestamp,
+    endOfDayTimestamp
+  } = getCurrentDayInterval()
+
+  return list.filter(el => el.dt >= startOfDayTimestamp && el.dt <= endOfDayTimestamp)
+}
+
+const getDataForChart = (cityId: number) => {
+  getHourlyForecast(cityId)
+    .then((res: AxiosResponse<IDataResponse>) => {
+      const currentdata = getCurrentData(res.data.list)
+      updateChart(currentdata.map(el => ({
+        x: el.dt_txt.split(' ')[1],
+        y: el.main.temp
+      })))
+    })
+}
+
+const initChart = () => {
+  chart.value = new ApexCharts(chartRef.value, options)
+  chart.value.render()
+}
+
+watch(
+  () => citiesStore.currentCity,
+  (newValue) => {
+    if(newValue) {
+      getDataForChart(newValue.id)
+    }
+  },
+  {
+    deep: true
+  }
+)
+
+onMounted(initChart)
 </script>
