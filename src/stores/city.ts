@@ -2,7 +2,7 @@ import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { ICity, ICityWeather, IHourlyWeather } from '@/types'
 import {
-  getCurrentForecast, getHourlyForecast
+  getCurrentForecast, getHourlyForecast, getCurrentForecastByGeo
 } from '@/api/services'
 import { useModalStore } from './modal'
 import type { AxiosResponse } from 'axios'
@@ -26,24 +26,24 @@ export const useCitiesStore = defineStore('city', () => {
       })
   }
 
-  const addCity = (city: ICity) => {
-    getCurrentForecast(city.id)
+  const addCity = (getFunc: () => Promise<AxiosResponse<ICityWeather>>) => {
+    getFunc()
       .then((res: AxiosResponse<ICityWeather>) => {
         setCurrentCity(res.data)
         cities.value.push(res.data)
       })
   }
 
-  const isContain = (city: ICity) => {
-    return cities.value.some(el => el.id === city.id)
+  const isContain = (id: number | undefined) => {
+    return cities.value.some(el => el.id === id)
   }
 
-  const addCityHandler = (city: ICity) => {
-    if (isContain(city)) {
+  const addCityHandler = ({ getFunc, cityId }: { getFunc: () => Promise<any>, cityId?: number }) => {
+    if (isContain(cityId)) {
       return modalStore.setModalMsg('Этот город уже добавлен')
     }
     if (cities.value.length < 5) {
-      return addCity(city)
+      return addCity(getFunc)
     }
     modalStore.setModalMsg('Невозможно добавить новый город. Максимальное количество - 5')
   }

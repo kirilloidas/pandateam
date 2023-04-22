@@ -7,7 +7,7 @@ export const useDebounce = (callback: Function, delay = 500) => {
     if (debounceTimeout.value) {
       clearTimeout(debounceTimeout.value)
     }
-    debounceTimeout.value = window.setTimeout(() => {
+    debounceTimeout.value = setTimeout(() => {
       callback(...args)
       debounceTimeout.value = null
     }, delay)

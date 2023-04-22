@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import DropdownList from '@/components/dropdownList/DropdownList.vue'
-import {getCities} from '@/api/services'
+import {getCities, getCurrentForecast} from '@/api/services'
 import {useDebounce} from '@/utils/useDebounce'
 import { ref, type Ref } from 'vue'
 import type { AxiosResponse } from 'axios';
@@ -33,7 +33,10 @@ const getItemLabel = (value: ICity) => {
 }
 
 const selectCity = (city: ICity) => {
-  addCityHandler(city)
+  addCityHandler({
+    getFunc: () => getCurrentForecast(city.id), 
+    cityId: city.id
+  })
 }
 
 const changeCitySearch = useDebounce((value: string) => {

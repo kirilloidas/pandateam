@@ -1,16 +1,11 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import ModalComponent from './components/ModalComponent.vue';
-</script>
-
 <template>
   <div>
     <header class="header">
-      <img alt="Vue logo" class="logo" src="@/assets/img/logo.png" />
+      <img alt="Vue logo" class="header__logo" src="@/assets/img/logo.png" />
 
-      <nav>
-        <RouterLink to="/">Главная</RouterLink>
-        <RouterLink to="/favorite">Избранное</RouterLink>
+      <nav class="header-menu menu">
+        <RouterLink class="menu__link" to="/">Главная</RouterLink>
+        <RouterLink class="menu__link" to="/favorite">Избранное</RouterLink>
       </nav>
     </header>
 
@@ -22,42 +17,75 @@ import ModalComponent from './components/ModalComponent.vue';
   </div>
 </template>
 
-<style scoped>
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+import ModalComponent from './components/ModalComponent.vue';
+import { useGeolocation } from '@/composables/useGeolocation'
+import { useCitiesStore } from '@/stores/city'
+import { getCurrentForecastByGeo } from '@/api/services'
+import { watch } from 'vue'
+
+const {latitude, longitude} = useGeolocation()
+const { addCityHandler } = useCitiesStore()
+
+watch(
+  () => [latitude, longitude],
+  () => {
+    if(latitude.value && longitude.value) {
+      addCityHandler({
+        getFunc: () => getCurrentForecastByGeo({lat: latitude.value, lon: longitude.value}), 
+      })
+    }
+  },
+  { deep: true }
+)
+</script>
+
+<style scoped lang="scss">
 .header {
   line-height: 1.5;
   max-height: 100vh;
   display: flex;
   flex-direction: column;
-}
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+  &__logo {
+    display: block;
+    width: 300px;
+    margin: 0 auto 2rem;
+  }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
+  .menu {
+    width: 100%;
+    font-size: 12px;
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
+    &__link {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 0.25rem;
+      transition: background-color 0.2s ease-in-out;
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
+      &:hover {
+        background-color: #0069d9;
+      }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
+      &.router-link-exact-active {
+        background-color: #0062cc;
+        outline: none;
 
-nav a:first-of-type {
-  border: 0;
+        &:hover {
+          background-color: #60adff;
+        }
+      }
+    }
+  }
 }
 
 @media (min-width: 1024px) {
@@ -65,25 +93,25 @@ nav a:first-of-type {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
-  }
 
-  .logo {
-    margin: 0 2rem 0 0;
+    &__logo {
+      margin: 0 2rem 0 0;
+    }
+
+    .menu {
+      text-align: left;
+      margin-left: -1rem;
+      font-size: 1rem;
+
+      padding: 1rem 0;
+      margin-top: 1rem;
+    }
   }
 
   header .wrapper {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
   }
 }
 </style>
