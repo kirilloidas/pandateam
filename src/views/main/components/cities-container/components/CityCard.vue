@@ -27,12 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue'
+import { defineProps } from 'vue'
 
 import type { ICityWeather } from '@/types/index';
-import { localStorageWrapper } from '@/utils/Storage';
 import { useCitiesStore } from '@/stores/city'
 import WeatherCardContent from '@/components/WeatherCardContent.vue';
+import { useFavorite } from '@/composables/useFavorite'
 
 interface IProps {
   item: ICityWeather
@@ -41,31 +41,7 @@ interface IProps {
 const props = defineProps<IProps>()
 
 const citiesStore = useCitiesStore()
-
-const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites'))
-
-const isFavorite = computed(() => favoritesStorage.value?.some(id => id === props.item.id))
-
-const addToFavorite = () => {
-  let newFavorites = []
-  if(favoritesStorage.value && favoritesStorage.value.some(id => id !== props.item.id)) {
-    newFavorites = [...favoritesStorage.value, props.item.id]
-  } else {
-    newFavorites = [props.item.id]
-  }
-
-  localStorageWrapper.setItem<number[]>('favorites', newFavorites)
-  favoritesStorage.value = newFavorites
-}
-
-const toggleAddToFavorite = () => {
-  if(isFavorite.value) {
-    const newFavorites = favoritesStorage.value?.filter(id => id !== props.item.id) ?? []
-    localStorageWrapper.setItem<number[]>('favorites', newFavorites)
-    return favoritesStorage.value = newFavorites
-  }
-  addToFavorite()
-}
+const {isFavorite, toggleAddToFavorite} = useFavorite(props.item)
 
 const remove = () => {
   citiesStore.removeCityHandler(props.item)

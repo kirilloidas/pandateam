@@ -18,12 +18,12 @@
 
 <script setup lang="ts">
 import Carousel from '@/components/CarouselComponent.vue';
-import WeatherCard from './components/WeatherCard.vue'
 import { useCitiesStore } from '@/stores/city'
 import type { IHourlyWeather } from '@/types/index';
 import { ref, watch, type Ref } from 'vue';
 import { getCurrentDayForecast } from '@/utils/getCurrentDayForecast';
 import DayWeekSwitcher from '@/components/DayWeekSwitcher.vue';
+import WeatherCard from '@/components/WeatherCard.vue';
 
 const citiesStore = useCitiesStore()
 
@@ -37,7 +37,6 @@ const getDayForecast = () => {
     })
     return acc
   }, [] as IHourlyWeather[]))
-  console.log(forecast.value)
 }
 
 const getWeekForecast = () => {

@@ -3,19 +3,45 @@
     @clickDay="getDayForecast"
     @clickWeek="getWeekForecast"
   >
+    <FavoriteCity
+      v-for="item of favoriteCities"
+      :key="item.city.id"
+      :item="item"
+    />
   </DayWeekSwitcher>
 </template>
 
 <script setup lang="ts">
-import { getCurrentForecastForGroup } from '@/api/services';
+import { getHourlyForecast } from '@/api/services';
+import DayWeekSwitcher from '@/components/DayWeekSwitcher.vue';
+import type { IHourlyWeather } from '@/types';
 import { localStorageWrapper } from '@/utils/Storage';
-import { onMounted, ref } from 'vue';
+import type { AxiosResponse } from 'axios';
+import { onMounted, ref, type Ref } from 'vue';
+import FavoriteCity from './components/FavoriteCity.vue';
 
-const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites'))
+interface IResponse {
+  city: {
+    name: string;
+    country: string;
+    id: number;
+  };
+  list: IHourlyWeather[];
+}
+
+const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites') ?? [])
+const favoriteCities: Ref<IResponse[]> = ref([])
 
 const getGroupData = (citiesId: number[]) => {
-  getCurrentForecastForGroup(citiesId.join(','))
-    .then(res => console.log(res))
+  const func = (cityId: number) => getHourlyForecast(cityId)
+
+  Promise.allSettled(citiesId.map(func))
+    .then(res => res.forEach((element) => {
+      if(element.status === 'fulfilled') {
+        const value = element.value as AxiosResponse<IResponse>
+        favoriteCities.value.push(value.data)
+      }
+    }))
 }
 
 const getDayForecast = () => {
