@@ -1,54 +1,69 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { ICity, ICityWeather } from '@/types/city'
+import type { ICity, ICityWeather, IHourlyWeather } from '@/types'
 import {
-  getHourlyForecast,
-  getCurrentForecast
+  getCurrentForecast, getHourlyForecast
 } from '@/api/services'
+import { useModalStore } from './modal'
 import type { AxiosResponse } from 'axios'
+
+interface IDataResponse {
+  list: IHourlyWeather[];
+  [key: string]: unknown;
+}
 
 export const useCitiesStore = defineStore('city', () => {
   const cities: Ref<ICityWeather[]> = ref([])
   const currentCity: Ref<ICityWeather | null> = ref(null)
+  const hourlyDataForCurrentCity: Ref<IHourlyWeather[]> = ref([])
 
-  const hourlyForecast = ref()
+  const modalStore = useModalStore()
+
+  const getHourlyData = (cityId: number) => {
+    getHourlyForecast(cityId)
+      .then((res: AxiosResponse<IDataResponse>) => {
+        hourlyDataForCurrentCity.value = res.data.list
+      })
+  }
 
   const addCity = (city: ICity) => {
-    currentForecast(city.id)
-    // cities.value.push(city)
+    getCurrentForecast(city.id)
+      .then((res: AxiosResponse<ICityWeather>) => {
+        setCurrentCity(res.data)
+        cities.value.push(res.data)
+      })
+  }
+
+  const addCityHandler = (city: ICity) => {
+    if (cities.value.length < 5) {
+      return addCity(city)
+    }
+    modalStore.setModalMsg('Невозможно добавить новый город. Максимальное количество - 5')
   }
 
   const removeCity = (id: number) => {
     cities.value = cities.value.filter(el => el.id !== id)
   }
 
-  const getHourlyForecastForCurrentCity = (cityId: number) => {
-    getHourlyForecast(cityId)
-      .then(res => {
-        console.log(res)
-        hourlyForecast.value = res.data
-      })
+  const removeCityHandler = (city: ICityWeather) => {
+    if (cities.value.length > 1) {
+      removeCity(city.id)
+      return setCurrentCity(cities.value[0])
+    }
+    modalStore.setModalMsg('Должен быть хотя бы один город')
   }
 
   const setCurrentCity = (city: ICityWeather) => {
     currentCity.value = city
-    getHourlyForecastForCurrentCity(city.id)
-  }
-
-  const currentForecast = (cityId: number) => {
-    getCurrentForecast(cityId)
-      .then((res: AxiosResponse<ICityWeather>) => {
-        currentCity.value = res.data
-        cities.value.push(res.data)
-      })
+    getHourlyData(city.id)
   }
 
   return {
     cities,
     currentCity,
-    addCity,
-    removeCity,
+    addCityHandler,
     setCurrentCity,
-    hourlyForecast,
+    hourlyDataForCurrentCity,
+    removeCityHandler,
   }
 })

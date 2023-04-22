@@ -3,8 +3,8 @@
     <ul class="carousel">
       <li 
         class="carousel__item"
-        v-for="(item, index) of list"
-        :key="index"
+        v-for="(item) of list"
+        :key="item"
         @click="$emit('elementClick', item)"
       >
         <slot 
@@ -23,7 +23,7 @@ interface IEmits {
   (e: 'elementClick', value: any): void;
 }
 
-defineProps<{list: unknown[]}>()
+defineProps<{list: any[]}>()
 defineEmits<IEmits>()
 </script>
 

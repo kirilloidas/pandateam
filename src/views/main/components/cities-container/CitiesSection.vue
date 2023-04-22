@@ -1,11 +1,12 @@
 <template>
   <section class="cities-container">
     <CarouselVue
-      :list="cities"
-      @elementClick="setCurrentCity"
+      :list="citiesStore.cities"
+      @elementClick="citiesStore.setCurrentCity"
     >
-      <template #item="{item}">
+      <template #item="{item}: { item: ICityWeather}">
         <CityCard
+          :class="{active: item.id === citiesStore.currentCity?.id}"
           :item="item"
         />
       </template>
@@ -14,11 +15,13 @@
 </template>
 
 <script setup lang="ts">
-import CarouselVue from '@/components/Carousel.vue';
+import CarouselVue from '@/components/CarouselComponent.vue'
 import { useCitiesStore } from '@/stores/city'
-import CityCard from './components/CityCard.vue';
+import CityCard from './components/CityCard.vue'
+import type { ICityWeather } from '@/types/city';
 
-const { cities, setCurrentCity } = useCitiesStore()
+const citiesStore = useCitiesStore()
+
 </script>
 
 <style lang="scss" scoped>

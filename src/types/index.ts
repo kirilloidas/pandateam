@@ -5,12 +5,7 @@ export interface ICity {
   [key: string]: unknown;
 }
 
-export interface ICityWeather {
-  name: string;
-  id: number;
-  sys: {
-    country: string;
-  };
+export interface IWeather {
   main: {
     temp: number;
     temp_max: number;
@@ -25,4 +20,19 @@ export interface ICityWeather {
     icon: string;
     main: string;
   }[];
+}
+
+export interface ICityResponse {
+  id: number;
+  name: string;
+  sys: {
+    country: string;
+  };
+}
+
+export interface ICityWeather extends IWeather, ICityResponse { }
+
+export interface IHourlyWeather extends IWeather {
+  dt: number;
+  dt_txt: string;
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import ModalComponent from './components/ModalComponent.vue';
 </script>
 
 <template>
@@ -9,13 +10,15 @@ import { RouterLink, RouterView } from 'vue-router'
 
       <nav>
         <RouterLink to="/">Главная</RouterLink>
-        <RouterLink to="/about">Избранное</RouterLink>
+        <RouterLink to="/favorite">Избранное</RouterLink>
       </nav>
     </header>
 
     <main>
       <RouterView />
     </main>
+
+    <ModalComponent/>
   </div>
 </template>
 

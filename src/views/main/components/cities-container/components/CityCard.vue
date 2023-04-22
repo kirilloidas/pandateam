@@ -1,67 +1,76 @@
 <template>
-  <div class="weather-card">
-    <div class="weather-card__header">
-      <h2 class="weather-card__title">{{ item.name }}, {{ item.sys.country }}</h2>
-      <h3 class="weather-card__subtitle">{{  item.weather[0].main }}</h3>
-    </div>
-    <div class="weather-card__content">
-      <div class="weather-card__info">
-        <div class="weather-card__info-item">
-          <span class="weather-card__info-label">Temperature:</span>
-          <span class="weather-card__info-value">{{ item.main.temp }}</span>
-        </div>
-        <div class="weather-card__info-item">
-          <span class="weather-card__info-label">Range:</span>
-          <span class="weather-card__info-value">{{ item.main.temp_min }} - {{ item.main.temp_max }}</span>
-        </div>
-        <div class="weather-card__info-item">
-          <span class="weather-card__info-label">Wind:</span>
-          <span class="weather-card__info-value">{{ item.wind.speed }}</span>
-        </div>
-        <div class="weather-card__info-item">
-          <span class="weather-card__info-label">Pressure:</span>
-          <span class="weather-card__info-value">{{item. main.pressure }}</span>
-        </div>
-      </div>
-      <div class="weather-card__icon">
-        <img :src="'http://openweathermap.org/img/w/' + item.weather[0].icon + '.png'" :alt="item.weather[0].description">
-      </div>
+  <div 
+    class="weather-card"
+    :class="{favorite: isFavorite}"
+  >
+    <div class="weather-card__header header-block">
+      <h2 class="header-block__title">{{ item.name }}, {{ item.sys.country }}</h2>
+      <h3 class="header-block__subtitle">{{  item.weather[0].main }}</h3>
     </div>
 
-    <button class="weather-card__button favorite-btn">
-      <i class="fa fa-star"></i>
-      В Избранное
-    </button>
+    <WeatherCardContent
+      :item="item"
+    />
+
+    <div class="weather-card__btns btns-block">
+      <button class="btns-block__button" @click="toggleAddToFavorite">
+        <i class="fa fa-star"></i>
+        {{isFavorite ? 'Удалить из Избранного' : 'В Избранное'}}
+      </button>
+
+      <button class="btns-block__button" @click="remove">
+        <i class="fa fa-star"></i>
+        Удалить
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { computed, defineProps, ref } from 'vue'
+
+import type { ICityWeather } from '@/types/index';
+import { localStorageWrapper } from '@/utils/Storage';
+import { useCitiesStore } from '@/stores/city'
+import WeatherCardContent from '@/components/WeatherCardContent.vue';
 
 interface IProps {
-  item: {
-    name: string;
-    sys: {
-      country: string;
-    };
-    main: {
-      temp: number;
-      temp_max: number;
-      temp_min: number;
-      pressure: number;
-    };
-    wind: {
-      speed: number;
-    };
-    weather: {
-      description: string;
-      icon: string;
-      main: string;
-    }[];
-  }
+  item: ICityWeather
 }
 
-defineProps<IProps>()
+const props = defineProps<IProps>()
+
+const citiesStore = useCitiesStore()
+
+const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites'))
+
+const isFavorite = computed(() => favoritesStorage.value?.some(id => id === props.item.id))
+
+const addToFavorite = () => {
+  let newFavorites = []
+  if(favoritesStorage.value && favoritesStorage.value.some(id => id !== props.item.id)) {
+    newFavorites = [...favoritesStorage.value, props.item.id]
+  } else {
+    newFavorites = [props.item.id]
+  }
+
+  localStorageWrapper.setItem<number[]>('favorites', newFavorites)
+  favoritesStorage.value = newFavorites
+}
+
+const toggleAddToFavorite = () => {
+  if(isFavorite.value) {
+    const newFavorites = favoritesStorage.value?.filter(id => id !== props.item.id) ?? []
+    localStorageWrapper.setItem<number[]>('favorites', newFavorites)
+    return favoritesStorage.value = newFavorites
+  }
+  addToFavorite()
+}
+
+const remove = () => {
+  citiesStore.removeCityHandler(props.item)
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -73,47 +82,28 @@ defineProps<IProps>()
   width: 300px;
   margin: 10px;
   cursor: pointer;
+  opacity: 0.7;
 
-  &__header {
+  &.favorite {
+    border: 4px solid orange;
+  }
+
+  &.active {
+    opacity: 1;
+  }
+
+  .header-block {
     margin-bottom: 20px;
-  }
 
-  &__title {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0;
-  }
-
-  &__subtitle {
-    font-size: 18px;
-    margin: 5px 0 0;
-  }
-
-  &__content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  &__info {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-right: 20px;
-
-    &-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    &-label {
-      font-size: 16px;
+    &__title {
+      font-size: 24px;
       font-weight: bold;
+      margin: 0;
     }
 
-    &-value {
-      font-size: 16px;
+    &__subtitle {
+      font-size: 18px;
+      margin: 5px 0 0;
     }
   }
 
@@ -126,25 +116,33 @@ defineProps<IProps>()
     }
   }
 
-  .favorite-btn {
-    display: inline-block;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    line-height: 1;
-    border-radius: 4px;
-    text-align: center;
-    cursor: pointer;
-    background-color: #f44336;
-    color: #fff;
+  .btns-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px;
 
-    &:hover {
-      background-color: #e53935;
-    }
+    &__button {
+      display: inline-block;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      line-height: 1;
+      border-radius: 4px;
+      text-align: center;
+      cursor: pointer;
+      background-color: #f44336;
+      color: #fff;
 
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.4);
+      &:hover {
+        background-color: #e53935;
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.4);
+      }
     }
   }
 }

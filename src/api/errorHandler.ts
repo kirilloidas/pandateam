@@ -1,7 +1,7 @@
 const errorHandler = ({ response }) => {
     switch (response.status) {
         case 404:
-            return 'Package doesn\'t exist'
+            return 'Weather forecast not found'
         default:
             return 'Something went wrong'
     }

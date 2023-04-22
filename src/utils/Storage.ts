@@ -22,7 +22,6 @@ class StorageWrapper {
   }
 
   setItem<T>(key: string, value: T): void {
-    // const item = typeof value === "object" ? JSON.stringify(value) : value
     const item = typeof value !== 'string' ? JSON.stringify(value) : value
 
     this.storage.setItem(key, item)
