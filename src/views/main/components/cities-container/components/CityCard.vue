@@ -13,7 +13,7 @@
     />
 
     <div class="weather-card__btns btns-block">
-      <button class="btns-block__button" @click="toggleAddToFavorite">
+      <button class="btns-block__button" @click="toggleAddToFavorite(item)">
         <i class="fa fa-star"></i>
         {{isFavorite ? 'Удалить из Избранного' : 'В Избранное'}}
       </button>

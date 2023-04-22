@@ -2,7 +2,7 @@
   <section class="favorite-section">
     <div class="favorite-section__header header">
       <h4 class="header__name">{{ item.city.name }}</h4>
-      <button class="favorite-section__btn" @click="$emit('removeFromFavorites')">
+      <button class="favorite-section__btn" @click="$emit('removeFromFavorites', item.city.id)">
         <i class="fa fa-star"></i>
         Удалить из Избранного
       </button>
@@ -12,9 +12,8 @@
       :list="item.list"
     >
       <template #item="{item}: { item: IHourlyWeather}">
-        <WeatherCardContent
+        <WeatherCard
           :item="item"
-          :key="item.dt"
         />
       </template>
     </CarouselComponent>
@@ -23,7 +22,7 @@
 
 <script setup lang="ts">
 import CarouselComponent from '@/components/CarouselComponent.vue';
-import WeatherCardContent from '@/components/WeatherCardContent.vue';
+import WeatherCard from '@/components/WeatherCard.vue';
 import type { IHourlyWeather } from '@/types';
 
 interface IProps {
@@ -45,6 +44,7 @@ defineEmits<IEmits>()
 
 <style lang="scss" scoped>
 .favorite-section {
+  margin-top: 30px;
 
   .header {
     margin-bottom: 20px;

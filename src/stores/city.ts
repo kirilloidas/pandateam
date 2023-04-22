@@ -34,7 +34,14 @@ export const useCitiesStore = defineStore('city', () => {
       })
   }
 
+  const isContain = (city: ICity) => {
+    return cities.value.some(el => el.id === city.id)
+  }
+
   const addCityHandler = (city: ICity) => {
+    if (isContain(city)) {
+      return modalStore.setModalMsg('Этот город уже добавлен')
+    }
     if (cities.value.length < 5) {
       return addCity(city)
     }

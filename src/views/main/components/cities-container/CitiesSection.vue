@@ -18,7 +18,7 @@
 import CarouselVue from '@/components/CarouselComponent.vue'
 import { useCitiesStore } from '@/stores/city'
 import CityCard from './components/CityCard.vue'
-import type { ICityWeather } from '@/types/city';
+import type { ICityWeather } from '@/types';
 
 const citiesStore = useCitiesStore()
 

@@ -4,9 +4,9 @@ import { computed, ref } from "vue"
 export const useFavorite = (item) => {
   const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites'))
 
-  const isFavorite = computed(() => favoritesStorage.value?.some(id => id === item.id))
+  const isFavorite = computed(() => favoritesStorage.value?.some(id => id === item?.id))
 
-  const addFavorite = () => {
+  const addFavorite = (item) => {
     let newFavorites = []
     if (favoritesStorage.value && favoritesStorage.value.some(id => id !== item.id)) {
       newFavorites = [...favoritesStorage.value, item.id]
@@ -18,22 +18,21 @@ export const useFavorite = (item) => {
     return newFavorites
   }
 
-  const removeFavorite = () => {
+  const removeFavorite = (item) => {
     const newFavorites = favoritesStorage.value?.filter(id => id !== item.id) ?? []
     localStorageWrapper.setItem<number[]>('favorites', newFavorites)
     return newFavorites
   }
 
-  const toggleAddToFavorite = () => {
-    console.log(isFavorite.value, item)
+  const toggleAddToFavorite = (item) => {
     if (isFavorite.value) {
-      console.log(removeFavorite())
-      return favoritesStorage.value = removeFavorite()
+      return favoritesStorage.value = removeFavorite(item)
     }
-    favoritesStorage.value = addFavorite()
+    favoritesStorage.value = addFavorite(item)
   }
 
   return {
+    favoritesStorage,
     isFavorite,
     toggleAddToFavorite,
     removeFavorite,

@@ -11,5 +11,5 @@
 import TopSection from './components/top-section/TopSection.vue'
 import ChartSection from './components/ChartSection.vue'
 import CitiesSection from './components/cities-container/CitiesSection.vue';
-import DayWeekForecast from './components/day-week-forecast/DayWeekForecast.vue';
+import DayWeekForecast from './components/DayWeekForecast.vue';
 </script>

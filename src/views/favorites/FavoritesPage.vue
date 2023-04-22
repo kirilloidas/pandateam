@@ -7,6 +7,7 @@
       v-for="item of favoriteCities"
       :key="item.city.id"
       :item="item"
+      @removeFromFavorites="removeFromFavorites"
     />
   </DayWeekSwitcher>
 </template>
@@ -15,10 +16,11 @@
 import { getHourlyForecast } from '@/api/services';
 import DayWeekSwitcher from '@/components/DayWeekSwitcher.vue';
 import type { IHourlyWeather } from '@/types';
-import { localStorageWrapper } from '@/utils/Storage';
 import type { AxiosResponse } from 'axios';
 import { onMounted, ref, type Ref } from 'vue';
 import FavoriteCity from './components/FavoriteCity.vue';
+import { useFavorite } from '@/composables/useFavorite';
+import { getCurrentDayForecast } from '@/utils/getCurrentDayForecast';
 
 interface IResponse {
   city: {
@@ -29,32 +31,49 @@ interface IResponse {
   list: IHourlyWeather[];
 }
 
-const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites') ?? [])
-const favoriteCities: Ref<IResponse[]> = ref([])
+const {favoritesStorage, removeFavorite} = useFavorite()
 
-const getGroupData = (citiesId: number[]) => {
+// const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites') ?? [])
+const favoriteCities: Ref<IResponse[]> = ref([])
+const initialFavoriteCities: Ref<IResponse[]> = ref([])
+
+const getGroupData = async (citiesId: number[]) => {
   const func = (cityId: number) => getHourlyForecast(cityId)
 
-  Promise.allSettled(citiesId.map(func))
+  return Promise.allSettled(citiesId.map(func))
     .then(res => res.forEach((element) => {
       if(element.status === 'fulfilled') {
         const value = element.value as AxiosResponse<IResponse>
         favoriteCities.value.push(value.data)
+        initialFavoriteCities.value.push(value.data)
       }
     }))
 }
 
-const getDayForecast = () => {
+const removeFromFavorites = (id: number) => {
+  removeFavorite(id)
+  initialFavoriteCities.value = initialFavoriteCities.value.filter(el => el.city.id !== id)
+  favoriteCities.value = favoriteCities.value.filter(el => el.city.id !== id)
+}
 
+const getDayForecast = () => {
+  favoriteCities.value = JSON.parse(JSON.stringify(initialFavoriteCities.value)).map((el: IResponse) => {
+    el.list = getCurrentDayForecast(el.list.map(item => {
+      item.dt_txt = item.dt_txt.split(' ')[1]
+      return item
+    }))
+    return el
+  })
 }
 
 const getWeekForecast = () => {
-
+  favoriteCities.value = JSON.parse(JSON.stringify(initialFavoriteCities.value))
 }
 
 onMounted(() => {
   if(favoritesStorage.value) {
     getGroupData(favoritesStorage.value)
+      .then(getDayForecast)
   }
 })
 </script>
