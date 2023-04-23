@@ -2,6 +2,7 @@
   <DayWeekSwitcher
     @clickDay="getDayForecast"
     @clickWeek="getWeekForecast"
+    v-show="citiesStore.currentCity?.id"
   >
     <Carousel
       :list="forecast"
@@ -20,7 +21,7 @@
 import Carousel from '@/components/CarouselComponent.vue';
 import { useCitiesStore } from '@/stores/city'
 import type { IHourlyWeather } from '@/types/index';
-import { ref, watch, type Ref } from 'vue';
+import { ref, watch, type Ref, onMounted } from 'vue';
 import { getCurrentDayForecast } from '@/utils/getCurrentDayForecast';
 import DayWeekSwitcher from '@/components/DayWeekSwitcher.vue';
 import WeatherCard from '@/components/WeatherCard.vue';
@@ -48,4 +49,5 @@ watch(
   getDayForecast,
 )
 
+onMounted(getDayForecast)
 </script>

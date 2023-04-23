@@ -1,6 +1,6 @@
 <template>
   <section class="chart-section">
-    <div ref="chartRef"></div>
+    <div ref="chartRef" v-show="citiesStore.currentCity?.id"></div>
   </section>
 </template>
 
@@ -57,21 +57,26 @@ const getDataForChart = (list: IHourlyWeather[]) => {
 
 const initChart = () => {
   chart.value = new ApexCharts(chartRef.value, options)
-  chart.value.render()
+  return chart.value.render()
+}
+
+const checkData = () => {
+  if(citiesStore.hourlyDataForCurrentCity) {
+      return getDataForChart(citiesStore.hourlyDataForCurrentCity)
+    }
+    updateChart([])
 }
 
 watch(
   () => citiesStore.hourlyDataForCurrentCity,
-  (newValue) => {
-    if(newValue) {
-      return getDataForChart(newValue)
-    }
-    updateChart([])
-  },
+  checkData,
   {
     deep: true
   }
 )
 
-onMounted(initChart)
+onMounted(() => {
+  initChart()
+    .then(checkData)
+})
 </script>
