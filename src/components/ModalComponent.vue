@@ -1,9 +1,9 @@
 <template>
   <div class="modal" v-if="modalStore.modalMsg">
     <div class="modal__overlay" @click="modalStore.clearModalMsg"></div>
-    <div class="modal__content">
+    <div class="modal__content content">
       <p>{{ modalStore.modalMsg }}</p>
-      <button @click="modalStore.clearModalMsg">Закрыть</button>
+      <button class="content__btn" @click="modalStore.clearModalMsg">Закрыть</button>
     </div>
   </div>
 </template>
@@ -35,14 +35,14 @@ const modalStore = useModalStore()
     background-color: rgba(0, 0, 0, 0.5);
   }
 
-  &__content {
+  .content {
     background-color: white;
     padding: 2rem;
     border-radius: 0.5rem;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
     text-align: center;
 
-    & button {
+    &__btn {
       margin-top: 1rem;
       padding: 0.5rem 1rem;
       border: none;
