@@ -50,13 +50,9 @@ const remove = () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/card-styles.scss';
+
 .weather-card {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  width: 300px;
-  margin: 10px;
   cursor: pointer;
   opacity: 0.7;
 
@@ -66,30 +62,6 @@ const remove = () => {
 
   &.active {
     opacity: 1;
-  }
-
-  .header-block {
-    margin-bottom: 20px;
-
-    &__title {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 0;
-    }
-
-    &__subtitle {
-      font-size: 18px;
-      margin: 5px 0 0;
-    }
-  }
-
-  &__icon {
-    width: 80px;
-
-    img {
-      width: 100%;
-      height: auto;
-    }
   }
 
   .btns-block {
@@ -125,26 +97,6 @@ const remove = () => {
 
 @media (max-width: 1024px) {
   .weather-card {
-    padding: 10px;
-    width: 250px;
-    margin: 10px;
-
-    .header-block {
-      margin-bottom: 10px;
-
-      &__title {
-        font-size: 20px;
-      }
-
-      &__subtitle {
-        font-size: 14px;
-      }
-    }
-
-    &__icon {
-      width: 50px;
-    }
-
     .btns-block {
 
       &__button {
@@ -154,4 +106,5 @@ const remove = () => {
     }
   }
 }
+
 </style>
