@@ -33,7 +33,6 @@ interface IResponse {
 
 const {favoritesStorage, removeFavorite} = useFavorite()
 
-// const favoritesStorage = ref(localStorageWrapper.getItem<number[]>('favorites') ?? [])
 const favoriteCities: Ref<IResponse[]> = ref([])
 const initialFavoriteCities: Ref<IResponse[]> = ref([])
 

@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/types/global.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "src/types/global.d.ts", "shims.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
