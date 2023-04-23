@@ -4,6 +4,7 @@
       type="text"
       v-model="selectedValue"
       @click="showDropdown"
+      @input="showDropdown"
       @keydown.arrow-down="highlightNextOption"
       @keydown.arrow-up="highlightPreviousOption"
       @keydown.enter="selectOption(highlightedIndex)"
@@ -23,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch } from 'vue';
+import { ref, defineEmits, defineProps, watch } from 'vue';
 
 interface IProps {
   itemLabel: (value: any) => string;

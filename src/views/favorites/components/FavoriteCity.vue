@@ -51,6 +51,7 @@ defineEmits<IEmits>()
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 
     &__name {
       font-size: 24px;

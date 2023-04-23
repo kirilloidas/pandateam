@@ -23,9 +23,3 @@ import type { ICityWeather } from '@/types';
 const citiesStore = useCitiesStore()
 
 </script>
-
-<style lang="scss" scoped>
-.cities-container {
-  padding: 10px;
-}
-</style>

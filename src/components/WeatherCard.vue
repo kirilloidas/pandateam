@@ -57,4 +57,28 @@ defineProps<IProps>()
     }
   }
 }
+
+@media (max-width: 1024px) {
+  .weather-card {
+    padding: 10px;
+    width: 250px;
+    margin: 10px;
+
+    .header-block {
+      margin-bottom: 10px;
+
+      &__title {
+        font-size: 20px;
+      }
+
+      &__subtitle {
+        font-size: 14px;
+      }
+    }
+
+    &__icon {
+      width: 50px;
+    }
+  }
+}
 </style>

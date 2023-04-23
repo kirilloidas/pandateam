@@ -1,3 +1,5 @@
+@import './base.css';
+
 #app {
   width: 1200px;
   margin: 0 auto;
@@ -18,27 +20,15 @@ nav, ul {
   }
 }
 
-@media (max-width: 1250px) {
-  #app {
-    width: 1000px;
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1240px) {
   #app {
-    width: 650px;
-  }
-}
-
-@media (max-width: 650px) {
-  #app {
-    width: 400px;
-  }
-}
-
-@media (max-width: 400px) {
-  #app {
-    width: 360px;
+    width: 100%;
   }
 }
 
