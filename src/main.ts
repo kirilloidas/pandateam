@@ -12,4 +12,6 @@ app.use(createPinia())
 
 app.use(router)
 
+console.log(import.meta.env.BASE_URL)
+
 app.mount('#app')

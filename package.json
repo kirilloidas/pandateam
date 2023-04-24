@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
-    "build-only": "(if not defined PUBLIC_URL (set \"PUBLIC_URL=./\")) &&  vite build",
+    "build-only": "vite build",
     "type-check": "vue-tsc --noEmit",
     "deploy": "npm run build-only && gh-pages -d dist",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
@@ -25,6 +25,7 @@
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-typescript": "^11.0.2",
     "@vue/tsconfig": "^0.1.3",
+    "dotenv": "^16.0.3",
     "eslint": "^8.34.0",
     "eslint-plugin-vue": "^9.9.0",
     "gh-pages": "^5.0.0",
