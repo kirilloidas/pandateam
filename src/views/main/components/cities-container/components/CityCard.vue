@@ -4,7 +4,7 @@
     :class="{favorite: isFavorite}"
   >
     <div class="weather-card__header header-block">
-      <h2 class="header-block__title">{{ item.name }}, {{ item.sys.country }}</h2>
+      <h2 class="header-block__title ellipsis">{{ item.name }}, {{ item.sys.country }}</h2>
       <h3 class="header-block__subtitle">{{  item.weather[0].main }}</h3>
     </div>
 

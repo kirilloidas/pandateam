@@ -1,7 +1,7 @@
 <template>
   <section class="favorite-section">
     <div class="favorite-section__header header">
-      <h4 class="header__name">{{ item.city.name }}</h4>
+      <h4 class="header__name ellipsis">{{ item.city.name }}</h4>
       <button class="favorite-section__btn" @click="$emit('removeFromFavorites', item.city.id)">
         <i class="fa fa-star"></i>
         Удалить из Избранного
